@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Task - To-Do List{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .form-header h2 {
+        color: #212529;
+        font-size: 2em;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #6c757d;
+        font-size: 1.1em;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+        font-size: 1.05em;
+    }
+
+    .form-group label .required {
+        color: #dc3545;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1em;
+        font-family: inherit;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    select.form-control {
+        cursor: pointer;
+    }
+
+    .form-help {
+        font-size: 0.9em;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #e9ecef;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1.05em;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        flex: 1;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .status-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .status-option {
+        position: relative;
+    }
+
+    .status-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .status-option label {
+        display: block;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .status-option input[type="radio"]:checked + label {
+        border-color: #667eea;
+        background: #f0f3ff;
+        color: #667eea;
+    }
+
+    .status-option label:hover {
+        border-color: #667eea;
+    }
+
+    .card-icon {
+        font-size: 2em;
+        display: block;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h2>➕ Add New Task</h2>
+        <p>Fill in the details to create a new task</p>
+    </div>
+
+    <form method="POST" action="/tasks/create">
+        <div class="form-group">
+            <label for="title">
+                Task Title <span class="required">*</span>
+            </label>
+            <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                class="form-control" 
+                required 
+                placeholder="Enter task title"
+                maxlength="255"
+            >
+            <div class="form-help">Give your task a clear and concise title</div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">
+                Description
+            </label>
+            <textarea 
+                id="description" 
+                name="description" 
+                class="form-control" 
+                placeholder="Enter task description (optional)"
+            ></textarea>
+            <div class="form-help">Provide additional details about the task</div>
+        </div>
+
+        <div class="form-group">
+            <label for="due_date">
+                Due Date
+            </label>
+            <input 
+                type="date" 
+                id="due_date" 
+                name="due_date" 
+                class="form-control"
+            >
+            <div class="form-help">Set a deadline for this task</div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                Status <span class="required">*</span>
+            </label>
+            <div class="status-options">
+                <div class="status-option">
+                    <input type="radio" id="status_pending" name="status" value="pending" checked>
+                    <label for="status_pending">
+                        <span class="card-icon">⏳</span>
+                        Pending
+                    </label>
+                </div>
+                <div class="status-option">
+                    <input type="radio" id="status_in_progress" name="status" value="in_progress">
+                    <label for="status_in_progress">
+                        <span class="card-icon">🚀</span>
+                        In Progress
+                    </label>
+                </div>
+                <div class="status-option">
+                    <input type="radio" id="status_completed" name="status" value="completed">
+                    <label for="status_completed">
+                        <span class="card-icon">✅</span>
+                        Completed
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                ✨ Create Task
+            </button>
+            <a href="/" class="btn btn-secondary">
+                ❌ Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set minimum date to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const dueDateInput = document.getElementById('due_date');
+        const today = new Date().toISOString().split('T')[0];
+        dueDateInput.setAttribute('min', today);
+    });
+</script>
+{% endblock %}

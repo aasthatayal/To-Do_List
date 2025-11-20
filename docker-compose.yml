@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: todo_postgres
+    environment:
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U todo_user -d todo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: todo_app
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: todo_db
+      POSTGRES_USER: todo_user
+      POSTGRES_PASSWORD: todo_password
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Restore service - Use this to restore database from backup
+  # Run: docker compose run --rm restore
+  restore:
+    image: postgres:15-alpine
+    container_name: todo_restore
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./db:/backup
+    environment:
+      PGPASSWORD: todo_password
+    command: sh -c "psql -h postgres -U todo_user -d todo_db < /backup/backup.sql"
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
